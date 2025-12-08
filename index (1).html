@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>试卷扫描程序</title>
+    <script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        color: #2d3748;
+      }
+
+      #app {
+        max-width: 580px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        animation: slideUp 0.5s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header {
+        background: #22b3a8;
+        color: white;
+        padding: 32px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+
+      .header p {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        font-weight: 400;
+      }
+
+      .form-container {
+        padding: 32px;
+      }
+
+      .form-group {
+        margin-bottom: 24px;
+      }
+
+      .form-label {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 8px;
+      }
+
+      .form-label i {
+        margin-right: 8px;
+        color: #22b3a8;
+        width: 16px;
+        text-align: center;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background: #fafafa;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #22b3a8;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(34, 179, 168, 0.1);
+      }
+
+      .form-control:hover {
+        border-color: #d1d5db;
+        background: white;
+      }
+
+      .radio-group {
+        display: flex;
+        gap: 12px;
+        background: #f9fafb;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1.5px solid #e5e7eb;
+      }
+
+      .radio-item {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background-color 0.2s ease;
+        flex: 1;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+
+      .radio-item:hover {
+        background: rgba(34, 179, 168, 0.08);
+      }
+
+      .radio-item input[type="radio"] {
+        margin-right: 6px;
+        accent-color: #22b3a8;
+      }
+
+      .scan-button {
+        width: 100%;
+        padding: 14px;
+        background: #22b3a8;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .scan-button:hover {
+        background: #1ea198;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(34, 179, 168, 0.3);
+      }
+
+      .scan-button:active {
+        transform: translateY(0);
+      }
+
+      /* 原始的 loading-block 样式（保持不变，作为预览） */
+      .loading-block {
+        display: none;
+        background: linear-gradient(135deg, #f0fdfc 0%, #ecfdf5 100%);
+        border: 1px solid #a7f3d0;
+        border-radius: 12px;
+        padding: 24px;
+        margin: 20px 0;
+        text-align: center;
+        animation: fadeIn 0.3s ease-out;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .loading-block:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(34, 179, 168, 0.15);
+      }
+
+      @keyframes progressShine {
+        0%,
+        100% {
+          box-shadow: 0 0 0 rgba(34, 179, 168, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(34, 179, 168, 0.6);
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .loading-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+
+        #checkBtn {
+          display: none;
+          border-radius: 8px;
+          background: #1ea198;
+          color: #ffffff;
+          border: none;
+          padding: 8px 16px;
+        }
+      }
+
+      .loading-animation {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 4px 12px rgba(34, 179, 168, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .loading-animation canvas {
+        width: 60px !important;
+        height: 60px !important;
+      }
+
+      .loading-info {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .loading-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #065f46;
+        margin-bottom: 8px;
+      }
+      .loading-title:focus {
+        cursor: pointer;
+      }
+
+      .loading-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .stat-item {
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border: 1px solid #d1fae5;
+      }
+
+      .stat-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 4px;
+        font-weight: 500;
+      }
+
+      .stat-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #22b3a8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .stat-icon {
+        width: 16px;
+        height: 16px;
+        color: #10b981;
+      }
+
+      .progress-bar {
+        display: none;
+        width: 100%;
+        max-width: 400px;
+        height: 6px;
+        background: #d1fae5;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 16px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #22b3a8, #10b981);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+        animation: progressPulse 2s ease-in-out infinite;
+      }
+
+      @keyframes progressPulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.8;
+        }
+      }
+
+      .loading-description {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-top: 8px;
+      }
+
+      .loading-hint {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 8px 16px;
+        background: rgba(34, 179, 168, 0.1);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #22b3a8;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .loading-hint:hover {
+        background: rgba(34, 179, 168, 0.15);
+        transform: translateY(-1px);
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 640px) {
+        .loading-content {
+          gap: 16px;
+        }
+
+        .loading-stats {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .stat-item {
+          padding: 12px;
+        }
+
+        .loading-animation {
+          width: 60px;
+          height: 60px;
+        }
+
+        .loading-animation canvas {
+          width: 45px !important;
+          height: 45px !important;
+        }
+      }
+
+      /* 暗色主题适配 */
+      @media (prefers-color-scheme: dark) {
+        .loading-block {
+          background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+          border-color: #10b981;
+        }
+
+        .stat-item {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: #10b981;
+        }
+
+        .loading-title {
+          color: #6ee7b7;
+        }
+
+        .loading-description {
+          color: #9ca3af;
+        }
+      }
+
+      .loading i {
+        font-size: 1.5rem;
+        animation: spin 1s linear infinite;
+        margin-bottom: 8px;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .status-message {
+        display: none;
+        padding: 12px 16px;
+        margin: 16px 0;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .status-success {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+
+      .status-error {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      select.form-control {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 12px center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+        padding-right: 40px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 640px) {
+        body {
+          padding: 12px;
+        }
+
+        #app {
+          margin: 0;
+        }
+
+        .form-container {
+          padding: 24px;
+        }
+
+        .header {
+          padding: 24px;
+        }
+
+        .header h1 {
+          font-size: 1.5rem;
+        }
+
+        .radio-group {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .radio-item {
+          justify-content: flex-start;
+        }
+      }
+
+      .form-group.has-content .form-control {
+        border-color: #22b3a8;
+        background: white;
+      }
+
+      .form-control:disabled {
+        background: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+      }
+
+      .scan-button:disabled {
+        background: #d1d5db;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .scan-button:disabled:hover {
+        background: #d1d5db;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .restart-button {
+        width: 40%;
+        margin-left: auto;
+        padding: 14px;
+        background: #7f71713d;
+        color: #6b5d5d;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .restart-button:hover {
+        background: #332c2c82;
+        transform: translateY(-1px);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(94, 90, 90, 0.3);
+      }
+
+      .restart-button:active {
+        transform: translateY(0);
+      }
+
+      .restart-button:disabled {
+        background: #d1d5db;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .restart-progress {
+        display: none;
+        background: linear-gradient(135deg, #fef3f2 0%, #fee2e2 100%);
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        padding: 24px;
+        margin: 20px 0;
+        text-align: center;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      .restart-progress-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .restart-progress-bar {
+        width: 100%;
+        max-width: 300px;
+        height: 8px;
+        background: #fee2e2;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .restart-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+        animation: progressPulse 2s ease-in-out infinite;
+      }
+
+      .restart-status {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .restart-status i {
+        animation: spin 1s linear infinite;
+      }
+
+      .divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 24px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="header">
+        <h1>
+          <i class="fas fa-scan"></i>
+          智能扫描系统
+        </h1>
+        <p>高效的文档扫描解决方案</p>
+      </div>
+
+      <div class="form-container">
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-desktop"></i>
+            扫描设备
+          </label>
+          <select
+            id="device"
+            name="device"
+            class="form-control"
+            onchange="selectScanChanged()"
+          >
+            <option value="">请选择扫描设备</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-print"></i>
+            打印方式
+          </label>
+          <div class="radio-group">
+            <label class="radio-item">
+              <input type="radio" name="duplexPrint" value="false" checked />
+              单面扫描
+            </label>
+
+            <label class="radio-item">
+              <input type="radio" name="duplexPrint" value="true" />
+              双面扫描
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-calendar"></i>
+            考试名称
+          </label>
+          <select
+            id="kspc"
+            name="kspcbh"
+            class="form-control"
+            onchange="selectPcChanged()"
+          >
+            <option value="">请选择考试名称</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-book"></i>
+            考试科目
+          </label>
+          <select id="km" name="kmdm" class="form-control">
+            <option value="">请先选择考试名称</option>
+          </select>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <!-- 原始loading区域（作为预览） -->
+        <div class="loading-block" id="loadingBlock">
+          <div class="loading-content">
+            <div class="loading-animation">
+              <canvas id="loadingIndicator"></canvas>
+            </div>
+
+            <div class="loading-info">
+              <div id="scanTitle" class="loading-title">
+                <i class="fas fa-scanner"></i>
+                正在扫描中...
+              </div>
+
+              <div class="loading-stats">
+                <div class="stat-item">
+                  <div class="stat-label">已扫描页数</div>
+                  <div class="stat-value">
+                    <i class="fas fa-file-alt stat-icon"></i>
+                    <span id="scanedCount">0</span>
+                  </div>
+                </div>
+
+                <div class="stat-item">
+                  <div class="stat-label">扫描时间</div>
+                  <div class="stat-value">
+                    <i class="fas fa-clock stat-icon"></i>
+                    <span id="lastTime">等待扫描...</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="progress-bar">
+                <div
+                  class="progress-fill"
+                  id="progressFill"
+                  style="width: 0%"
+                ></div>
+              </div>
+
+              <div class="loading-description">
+                请保持设备稳定，正在处理您的文档...
+              </div>
+              <!-- 
+              <div class="loading-hint">
+                <i class="fas fa-expand-alt"></i>
+                点击查看详细信息
+              </div> -->
+            </div>
+            <button id="checkBtn">我知道了</button>
+          </div>
+        </div>
+
+        <button id="restart" class="restart-button">
+          <i class="fas fa-redo"></i>
+          手工转下一批次
+        </button>
+
+        <!-- 重启进度条 -->
+        <div class="restart-progress" id="restartProgress">
+          <div class="restart-progress-content">
+            <div class="restart-status" id="restartStatus">
+              <i class="fas fa-sync-alt"></i>
+              正在操作中...
+            </div>
+            <div class="restart-progress-bar">
+              <div
+                class="restart-progress-fill"
+                id="restartProgressFill"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <button id="scan" class="scan-button">
+          <i class="fas fa-play"></i>
+          开始扫描
+        </button>
+        <div style="height: 20px"></div>
+        <span style="font-weight: 400; font-size: 14px; text-align: center">
+          备注:
+          因不同型号扫描仪适配不同，若扫描无法自动转下一个批次，则点【手工转下一批次】按钮扫描。
+        </span>
+      </div>
+    </div>
+
+    <script type="module">
+      import { DotLottie } from "http://8.138.217.183:8899/resources/js/lottiefiles_dotlottie-web.js";
+      window.DotLottie = DotLottie;
+      // 初始化主loading动画
+      window._animation = new DotLottie({
+        autoplay: true,
+        loop: true,
+        canvas: document.getElementById("loadingIndicator"),
+        src: "https://lottie.host/ba149f8c-78cc-4580-bb92-c1b7f15de8df/Xn7x4H6RmP.lottie",
+      });
+    </script>
+
+    <script>
+      const clientId = "10.200.29.139";
+      //const clientId = crypto.randomUUID();
+
+      document.addEventListener("DOMContentLoaded", function () {
+        initSelect();
+
+        // 添加输入状态指示
+        $(".form-control").on("change input", function () {
+          const formGroup = $(this).closest(".form-group");
+          if ($(this).val()) {
+            formGroup.addClass("has-content");
+          } else {
+            formGroup.removeClass("has-content");
+          }
+        });
+      });
+
+      let scanStartTime = null;
+      let totalPages = 0;
+
+      function showStatus(message, type) {
+        const statusEl = document.getElementById("statusMessage");
+        statusEl.textContent = message;
+        statusEl.className = `status-message status-${type}`;
+        statusEl.style.display = "block";
+        setTimeout(() => {
+          statusEl.style.display = "none";
+        }, 3000);
+      }
+
+      function showLoading(show) {
+        document.getElementById("loadingBlock").style.display = show
+          ? "block"
+          : "none";
+        document.getElementById("scan").disabled = show;
+        document.getElementById("restart").disabled = show;
+
+        if (show) {
+          scanStartTime = Date.now(); // 记录扫描开始时间
+          totalPages = 0;
+        }
+      }
+
+      var selectUrl, wsUrl;
+
+      function changeAnimation(url) {
+        if (window._animation) {
+          window._animation.destroy();
+        }
+
+        window._animation = new window.DotLottie({
+          autoplay: true,
+          loop: false,
+          canvas: document.getElementById("loadingIndicator"),
+          src: url,
+        });
+      }
+      // 当扫描完成
+      function onScaned() {
+        const btn = document.getElementById("checkBtn");
+        btn.style.display = "block";
+
+        const scanTitleDom = document.getElementById("scanTitle");
+        scanTitleDom.innerText = "已经扫描完成";
+        showStatus("扫描完成！", "success");
+
+        if (window._animation) {
+          window._animation.destroy();
+        }
+
+        changeAnimation(
+          "https://assets-v2.lottiefiles.com/a/c5e41170-1150-11ee-9588-b770d4672ee9/lQbjqMlElg.lottie"
+        );
+      }
+      // 当确定之后 一切还原
+      function onChecked() {
+        changeAnimation(
+          "https://lottie.host/ba149f8c-78cc-4580-bb92-c1b7f15de8df/Xn7x4H6RmP.lottie"
+        );
+        document.getElementById("scanedCount").textContent = 0;
+        document.getElementById("lastTime").textContent = "等待扫描...";
+        const scanTitleDom = document.getElementById("scanTitle");
+        scanTitleDom.innerText = "正在扫描中...";
+        showLoading(false);
+      }
+
+      $("#checkBtn").click(onChecked);
+
+      // 重启服务功能
+      $("#restart").click(function () {
+        restartService();
+      });
+
+      // 重启服务函数
+      function restartService() {
+        // 显示重启进度条
+        document.getElementById("restartProgress").style.display = "block";
+        document.getElementById("restart").disabled = true;
+        document.getElementById("scan").disabled = true;
+
+        // 更新状态
+        document.getElementById("restartStatus").innerHTML =
+          '<i class="fas fa-sync-alt"></i> 正在操作中...';
+        document.getElementById("restartProgressFill").style.width = "20%";
+
+        // 调用重启接口
+        $.ajax({
+          url: "/scanner/restart-for-new-batch",
+          type: "POST",
+          success: function (response) {
+            // 重启请求成功，开始检测恢复状态
+            document.getElementById("restartStatus").innerHTML =
+              '<i class="fas fa-sync-alt"></i> 重启请求已发送，正在等待服务恢复...';
+            document.getElementById("restartProgressFill").style.width = "50%";
+
+            // 开始检测服务是否恢复
+            checkReady();
+          },
+          error: function (xhr, status, error) {
+            // 重启失败
+            document.getElementById("restartStatus").innerHTML =
+              '<i class="fas fa-exclamation-triangle"></i> 重启失败，请重试';
+            document.getElementById("restartProgressFill").style.width = "0%";
+            showStatus("操作失败，请重试", "error");
+
+            // 恢复按钮状态
+            setTimeout(() => {
+              document.getElementById("restartProgress").style.display = "none";
+              document.getElementById("restart").disabled = false;
+              document.getElementById("scan").disabled = false;
+            }, 3000);
+          },
+        });
+      }
+
+      // 检测服务是否恢复
+      async function checkReady() {
+        document.getElementById("restartStatus").innerHTML =
+          '<i class="fas fa-sync-alt"></i> 正在检测服务是否恢复...';
+        document.getElementById("restartProgressFill").style.width = "70%";
+
+        try {
+          const resp = await fetch("/scanner/health");
+          if (resp.ok) {
+            // 服务恢复成功
+            document.getElementById("restartStatus").innerHTML =
+              '<i class="fas fa-check-circle"></i> 服务重启成功！';
+            document.getElementById("restartProgressFill").style.width = "100%";
+            showStatus("服务重启成功！", "success");
+
+            // 1秒后刷新页面
+            setTimeout(() => {
+              window.location.href = "/index.html";
+            }, 1000);
+          } else {
+            // 服务还未恢复，3秒后重试
+            setTimeout(checkReady, 3000);
+          }
+        } catch (e) {
+          // 网络错误或服务未恢复，3秒后重试
+          setTimeout(checkReady, 3000);
+        }
+      }
+
+      function initSelect() {
+        $.ajax({
+          // url: "../twain/select",
+          url: "http://192.168.0.112:8888/twain/select",
+          type: "GET",
+          dataType: "json",
+          success: function (response) {
+            if (response.data.length > 0) {
+              selectUrl = response.selectUrl;
+              wsUrl = response.wsUrl;
+              $("#device").empty();
+              $("#device").append('<option value="">请选择扫描设备</option>');
+              for (var i = 0; i < response.data.length; i++) {
+                var option = document.createElement("option");
+                option.value = response.data[i];
+                option.text = response.data[i];
+                $("#device").append(option);
+              }
+              showStatus("扫描设备加载成功", "success");
+              getpc(selectUrl);
+            }
+          },
+          error: function (xhr, status, error) {
+            $("#device").empty();
+            $("#device").append('<option value="">暂无扫描设备</option>');
+            showStatus("无法连接扫描设备", "error");
+          },
+        });
+      }
+
+      function getpc(selectUrl) {
+        if (selectUrl !== undefined) {
+          $.ajax({
+            url: selectUrl + "/exa/k-kspc/scanGetPcInfo.do",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+              if (response.data !== null) {
+                $("#kspc").empty();
+                $("#kspc").append('<option value="">请选择考试名称</option>');
+                response.data.forEach(function (item) {
+                  $("#kspc").append(
+                    '<option value="' +
+                      item.kspcbh +
+                      '">' +
+                      item.kspcmc +
+                      "</option>"
+                  );
+                });
+              }
+            },
+            error: function (xhr, status, error) {
+              $("#kspc").empty();
+              $("#kspc").append('<option value="">请选择考试名称</option>');
+              showStatus("考试名称数据加载失败", "error");
+            },
+          });
+        }
+      }
+
+      function selectScanChanged() {
+        var selectElement = document.getElementById("device").value;
+        if (
+          selectElement !== "" &&
+          selectElement !== null &&
+          selectElement !== undefined
+        ) {
+          getpc();
+        }
+      }
+
+      var kspcbh, kmdm;
+      function selectPcChanged() {
+        var selectElement = document.getElementById("kspc");
+        kspcbh = selectElement.value;
+        if (kspcbh !== "" && kspcbh !== null && kspcbh !== undefined) {
+          $.ajax({
+            url:
+              selectUrl +
+              "/exa/k-kspckm/pckm.do?kspcbh=" +
+              kspcbh +
+              "&scanType=scan",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+              if (response.data !== null) {
+                $("#km").empty();
+                $("#km").append('<option value="">请选择考试科目</option>');
+                response.data.forEach(function (item) {
+                  $("#km").append(
+                    '<option value="' +
+                      item.kmdm +
+                      '">' +
+                      item.kmmc +
+                      "</option>"
+                  );
+                });
+              }
+            },
+            error: function (xhr, status, error) {
+              $("#km").empty();
+              $("#km").append('<option value="">暂无数据</option>');
+              showStatus("考试科目数据加载失败", "error");
+            },
+          });
+        } else {
+          $("#km").empty();
+          $("#km").append('<option value="">请先选择考试名称</option>');
+        }
+      }
+
+      $("#scan").click(function () {
+        let name = $("#device").val();
+        let duplexPrint = $('input:radio[name="duplexPrint"]:checked').val();
+        let kspcbh = $("#kspc").val();
+        let kmdm = $("#km").val();
+
+        if (
+          kspcbh !== "" &&
+          kspcbh !== null &&
+          kspcbh !== undefined &&
+          kmdm !== "" &&
+          kmdm !== null &&
+          kmdm !== undefined &&
+          name !== "" &&
+          name !== null &&
+          name !== undefined
+        ) {
+          showLoading(true);
+          $.ajax({
+            url:
+              selectUrl +
+              "/scan/scan-pc-img/getCount.do?kspcbh=" +
+              kspcbh +
+              "&kmdm=" +
+              kmdm,
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+              if (response.data !== null) {
+                if (response.data > 0) {
+                  uploadFile(
+                    name,
+                    duplexPrint,
+                    kspcbh,
+                    kmdm,
+                    "PC" + kspcbh + kmdm + "_" + (response.data + 1)
+                  );
+                } else {
+                  uploadFile(
+                    name,
+                    duplexPrint,
+                    kspcbh,
+                    kmdm,
+                    "PC" + kspcbh + kmdm + "_" + 1
+                  );
+                }
+              }
+
+              var ws = new WebSocket(
+                /*"ws://192.168.0.112:8888/scan-ws?clientId=" + clientId*/
+                wsUrl + clientId
+              );
+
+              ws.onopen = function () {
+                // Web Socket 已连接上，使用 send() 方法发送数据
+                // ws.send("发送数据");
+                // alert("数据发送中...");
+              };
+
+              ws.onmessage = function (evt) {
+                var data = JSON.parse(evt.data).data;
+
+                // 处理扫描仪错误事件
+                if (data.event === "SCAN_ERR") {
+                  showStatus("扫描仪错误，正在重启扫描仪...", "error");
+                  showLoading(false);
+
+                  // 重启扫描仪服务
+                  restartService();
+                  return;
+                }
+
+                // 处理扫描仪缺纸事件
+                if (data.event === "NO_PAPER") {
+                  showStatus("扫描仪缺纸，请添加纸张后重新开始扫描", "error");
+                  showLoading(false);
+                  return;
+                }
+
+                const time = data.processTime;
+                const count = data.count;
+
+                // 获取dom更新内容
+                const countDom = document.getElementById("scanedCount");
+                const timeDom = document.getElementById("lastTime");
+
+                countDom.innerText = count;
+                timeDom.innerText = time;
+
+                // 更新进度条
+                const progressFill = document.getElementById("progressFill");
+                const progress = Math.min((count / 100) * 100, 100); // 假设总页数为100
+                progressFill.style.width = progress + "%";
+
+                setTimeout(() => {
+                  if (data.status == "completed") {
+                    onScaned();
+                  }
+                }, 1000);
+              };
+
+              ws.onclose = function () {
+                // 关闭 websocket
+              };
+            },
+            error: function (xhr, status, error) {
+              showLoading(false);
+              showStatus("获取扫描计数失败", "error");
+            },
+          });
+        } else {
+          showStatus("请完整填写所有必要信息", "error");
+        }
+      });
+
+      function uploadFile(name, duplexPrint, kspcbh, kmdm, scanPc) {
+        $.ajax({
+          url:
+            "../twain/scan?deviceName=" +
+            name +
+            "&duplexPrint=" +
+            duplexPrint +
+            "&kspcbh=" +
+            kspcbh +
+            "&kmdm=" +
+            kmdm +
+            "&scanPc=" +
+            scanPc +
+            "&clientId=" +
+            clientId,
+          type: "GET",
+          success: function (response) {},
+          error: function (xhr, status, error) {
+            showLoading(false);
+            showStatus("扫描失败，请重试", "error");
+          },
+        });
+      }
+    </script>
+  </body>
+</html>
