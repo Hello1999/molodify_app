@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:melodify_app/pages/app_shell.dart';
 
 void main(List<String> args) async {
   runApp(MelodifyApp());
@@ -14,14 +15,5 @@ class MelodifyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: AppShell(),
     );
-  }
-}
-
-class AppShell extends StatelessWidget {
-  const AppShell({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: Text('a App'));
   }
 }
