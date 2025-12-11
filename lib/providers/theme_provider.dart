@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/theme/app_colors.dart';
 
-
 class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   ThemeColorOption _colorOption = ThemeColorOption.purple;
@@ -36,6 +35,51 @@ class ThemeProvider extends ChangeNotifier {
     }
 
     notifyListeners();
-    
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    if (mode == _themeMode) return;
+    _themeMode = mode;
+
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_themeModeKey, mode.index);
+  }
+
+  Future<void> setColorOption(ThemeColorOption option) async {
+    if (_colorOption == option) return;
+    _colorOption = option;
+
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_colorOptionKey, _colorOption.index);
+  }
+
+  Future<void> toggleThemeMode(BuildContext context) async {
+    final isDark = isDarkMode(context);
+    await setThemeMode(isDark ? ThemeMode.light : ThemeMode.dark);
+  }
+
+  String get theemeModeLabel {
+    switch (_themeMode) {
+      case ThemeMode.system:
+        return 'System';
+      case ThemeMode.dark:
+        return 'dark';
+      case ThemeMode.light:
+        return 'light';
+    }
+  }
+
+  IconData get themeModecon {
+    switch (_themeMode) {
+      case ThemeMode.system:
+        return Icons.brightness_auto;
+      case ThemeMode.light:
+        return Icons.light_mode;
+      case ThemeMode.dark:
+        return Icons.dark_mode;
+    }
   }
 }
