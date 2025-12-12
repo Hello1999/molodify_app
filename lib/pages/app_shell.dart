@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:melodify_app/pages/home/home_page.dart';
+import 'package:melodify_app/pages/library/library_page.dart';
+import 'package:melodify_app/pages/search/search_page.dart';
 
-class AppShell extends StatefulWidget{
+class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
   @override
   State<StatefulWidget> createState() => _AppShellState();
-  
 }
 
 class _AppShellState extends State<AppShell> {
   int _currentIndex = 0;
 
+  final List<Widget> _pages = [HomePage(), SearchPage(), LibraryPage()];
 
   final List<NavigationDestination> _destinations = const [
     NavigationDestination(
@@ -34,24 +37,27 @@ class _AppShellState extends State<AppShell> {
       label: 'Profile',
     ),
   ];
+
+  Widget _buildBody() {
+    return _pages[_currentIndex];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          Text('A')
-        ],
-      ),
+      body: _buildBody(),
       bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           NavigationBar(
-            selectedIndex: _currentIndex, onDestinationSelected: (index) {
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
               setState(() {
                 _currentIndex = index;
               });
-          },
-          destinations: _destinations, 
-          )
+            },
+            destinations: _destinations,
+          ),
         ],
       ),
     );
