@@ -8,26 +8,6 @@ class HomePage extends StatelessWidget {
     return 'Good evening';
   }
 
-
-
-  Widget _buildQuickPlayGrid(BuildContext context,) {
-    return Padding(padding: EdgeInsets.symmetric(horizontal: 16), 
-    child: GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 3.5,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8
-      ),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Text('G');
-      },
-    ),);
-  }
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -67,34 +47,50 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
-          SliverToBoxAdapter(
-             child: _buildQuickPlayGrid(context),
-          )
+          SliverToBoxAdapter(child: _buildQuickPlayGrid(context)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildQuickPlayGrid(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          childAspectRatio: 3.5,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return _QuickPlayItem(playlist: 'playlist');
+        },
       ),
     );
   }
 }
 
-
-
 class _QuickPlayItem extends StatelessWidget {
   final dynamic playlist;
   final VoidCallback? onTap;
 
-  _QuickPlayItem({
-    required this.playlist,
-    this.onTap
-  });
+  _QuickPlayItem({required this.playlist, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Material(
-      color: ColorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(4),
-
+      child: InkWell(
+        onTap: onTap,
+        child: Row(children: []),
+      ),
     );
   }
 }
