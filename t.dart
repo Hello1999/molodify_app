@@ -1,10 +1,8 @@
-enum Theme {
-  x,
-  y,
-  z
-}
+import 'dart:ffi';
 
 
 void main(List<String> args) {
-    print(Theme.values);
+List<String> s = ['a','b','c'];
+
+    print(s.take(5));
 }

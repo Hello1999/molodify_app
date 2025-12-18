@@ -1,3 +1,5 @@
+import 'package:melodify_app/models/song.dart';
+
 class Playlist {
   final String id;
   final String name;
@@ -7,7 +9,7 @@ class Playlist {
   final String createdBy;
   final DateTime createdAt;
   final bool isPublic;
-  final int fllowers;
+  final int followers;
 
   Playlist({
     required this.id,
@@ -18,6 +20,6 @@ class Playlist {
     required this.createdBy,
     required this.createdAt,
     this.isPublic = true,
-    this.fllowers = 0,
+    this.followers = 0,
   });
 }
