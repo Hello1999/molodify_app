@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:melodify_app/services/mock_data.dart';
+import 'package:melodify_app/widgets/common/cached_image.dart';
 
 class HomePage extends StatelessWidget {
   String _getGreeting() {
@@ -54,20 +56,24 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildQuickPlayGrid(BuildContext context) {
+    final playlists = MockData.playlists.take(6).toList();
+    final itemsToShow = true ? 6 : playlists.length;
+    final columns = true ? 2 : 3;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+          crossAxisCount: columns,
           childAspectRatio: 3.5,
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
         ),
-        itemCount: 10,
+        itemCount: itemsToShow,
         itemBuilder: (context, index) {
-          return _QuickPlayItem(playlist: 'playlist');
+          final playlist = playlists[index];
+          return _QuickPlayItem(playlist: playlist, onTap: () => {});
         },
       ),
     );
@@ -78,7 +84,7 @@ class _QuickPlayItem extends StatelessWidget {
   final dynamic playlist;
   final VoidCallback? onTap;
 
-  _QuickPlayItem({required this.playlist, this.onTap});
+  const _QuickPlayItem({required this.playlist, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +93,26 @@ class _QuickPlayItem extends StatelessWidget {
     return Material(
       color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       borderRadius: BorderRadius.circular(4),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Row(children: []),
+        child: Row(
+          children: [
+            AppCachedImage(imgUrl: playlist.coverImage, width: 56, height: 56),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                playlist.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+            SizedBox(width: 8),
+          ],
+        ),
       ),
     );
   }
