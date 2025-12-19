@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:melodify_app/services/mock_data.dart';
 import 'package:melodify_app/widgets/common/cached_image.dart';
+import 'package:melodify_app/widgets/common/section_header.dart';
 
 class HomePage extends StatelessWidget {
   String _getGreeting() {
@@ -48,8 +49,10 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-
           SliverToBoxAdapter(child: _buildQuickPlayGrid(context)),
+          SliverToBoxAdapter(
+            child: SectionHeader(title: 'Made For You', subtitle: 'Personalized playlists', onSeeAll: () => {},),
+          ),
         ],
       ),
     );
