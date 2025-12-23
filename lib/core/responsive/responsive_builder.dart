@@ -5,7 +5,7 @@ class ResponsiveBuilder extends StatelessWidget {
   final Widget Function(BuildContext context, ScreenSize screenSize) builder;
 
 
-  ResponsiveBuilder({
+  const ResponsiveBuilder({
     super.key,
     required this.builder
   });

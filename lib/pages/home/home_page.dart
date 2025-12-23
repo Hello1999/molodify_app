@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:melodify_app/core/responsive/breakpoint.dart';
+import 'package:melodify_app/core/responsive/responsive_builder.dart';
+import 'package:melodify_app/models/playlist.dart';
 import 'package:melodify_app/services/mock_data.dart';
+import 'package:melodify_app/widgets/cards/playlist_card.dart';
 import 'package:melodify_app/widgets/common/cached_image.dart';
 import 'package:melodify_app/widgets/common/section_header.dart';
 
@@ -13,6 +17,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = ResponsiveBuilder.of(context);
+
     // TODO: implement build
     return Scaffold(
       body: CustomScrollView(
@@ -51,7 +57,19 @@ class HomePage extends StatelessWidget {
           ),
           SliverToBoxAdapter(child: _buildQuickPlayGrid(context)),
           SliverToBoxAdapter(
-            child: SectionHeader(title: 'Made For You', subtitle: 'Personalized playlists', onSeeAll: () => {},),
+            child: SectionHeader(
+              title: 'Made For You',
+              subtitle: 'Personalized playlists',
+              onSeeAll: () => {},
+            ),
+          ),
+          SliverToBoxAdapter(child: _buildPlaylistSection(context, screenSize)),
+          SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'Top Charts',
+              subtitle: 'Most played this week',
+              onSeeAll: () {},
+            ),
           ),
         ],
       ),
@@ -77,6 +95,35 @@ class HomePage extends StatelessWidget {
         itemBuilder: (context, index) {
           final playlist = playlists[index];
           return _QuickPlayItem(playlist: playlist, onTap: () => {});
+        },
+      ),
+    );
+  }
+
+  Widget _buildPlaylistSection(BuildContext context, ScreenSize screenSize) {
+    final playlists = MockData.playlists;
+    final cardWidth = context.responsive<double>(
+      mobile: 150,
+      tablet: 170,
+      desktop: 180,
+    );
+
+    return SizedBox(
+      height: cardWidth + 50,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: screenSize.horizontalPadding),
+        itemCount: playlists.length,
+        itemBuilder: (context, index) {
+          final artists = playlists[index];
+          return Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: PlaylistCard(
+              playlist: artists,
+              width: cardWidth,
+              onTap: () => {print('touch on homepage 115')},
+            ),
+          );
         },
       ),
     );
