@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:melodify_app/core/responsive/breakpoint.dart';
 import 'package:melodify_app/core/responsive/responsive_builder.dart';
 import 'package:melodify_app/models/playlist.dart';
+import 'package:melodify_app/models/song.dart';
 import 'package:melodify_app/services/mock_data.dart';
 import 'package:melodify_app/widgets/cards/playlist_card.dart';
+import 'package:melodify_app/widgets/cards/song_tile.dart';
 import 'package:melodify_app/widgets/common/cached_image.dart';
 import 'package:melodify_app/widgets/common/section_header.dart';
 
@@ -46,7 +48,7 @@ class HomePage extends StatelessWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenSize.horizontalPadding),
               child: Text(
                 _getGreeting(),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -55,7 +57,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-          SliverToBoxAdapter(child: _buildQuickPlayGrid(context)),
+          SliverToBoxAdapter(child: _buildQuickPlayGrid(context, screenSize)),
           SliverToBoxAdapter(
             child: SectionHeader(
               title: 'Made For You',
@@ -71,15 +73,17 @@ class HomePage extends StatelessWidget {
               onSeeAll: () {},
             ),
           ),
+          SliverToBoxAdapter(child: _buildTopCharts(context)),
         ],
       ),
     );
   }
 
-  Widget _buildQuickPlayGrid(BuildContext context) {
+  Widget _buildQuickPlayGrid(BuildContext context, ScreenSize screenSize) {
     final playlists = MockData.playlists.take(6).toList();
-    final itemsToShow = true ? 6 : playlists.length;
-    final columns = true ? 2 : 3;
+    final columns = screenSize.isMobile ? 2 : (screenSize.isTablet ? 3 : 4);
+    final itemsToShow = screenSize.isMobile ? 6 : playlists.length;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
@@ -109,7 +113,7 @@ class HomePage extends StatelessWidget {
     );
 
     return SizedBox(
-      height: cardWidth + 50,
+      height: cardWidth + 60,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: screenSize.horizontalPadding),
@@ -127,6 +131,13 @@ class HomePage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _buildTopCharts(BuildContext context) {
+    final songs = MockData.topCharts.take(5);
+    final Song song = songs.first;
+
+    return SongTile(song: song);
   }
 }
 

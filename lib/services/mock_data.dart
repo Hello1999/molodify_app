@@ -5,7 +5,8 @@ import 'package:melodify_app/models/song.dart';
 class MockData {
   MockData._();
 
-static String _albumArt(int id) => 'https://picsum.photos/seed/album$id/400/400';
+  static String _albumArt(int id) =>
+      'https://picsum.photos/seed/album$id/400/400';
   static String _playlistImg(int id) =>
       'https://picsum.photos/seed/playlist$id/400/400';
 
@@ -281,4 +282,10 @@ static String _albumArt(int id) => 'https://picsum.photos/seed/album$id/400/400'
       followers: 4500000,
     ),
   ];
+
+  static List<Song> get topCharts {
+    final sorted = List<Song>.from(songs);
+    sorted.sort((a, b) => b.playCount.compareTo(a.playCount));
+    return sorted.take(10).toList();
+  }
 }
