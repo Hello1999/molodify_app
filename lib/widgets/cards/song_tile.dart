@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:melodify_app/models/song.dart';
+import 'package:melodify_app/widgets/common/cached_image.dart';
 
 class SongTile extends StatelessWidget {
   final Song song;
@@ -27,17 +28,41 @@ class SongTile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Row(
-      children: [
-        SizedBox(
-          width: 32,
-          child: Text(
-            '1',
-            style: textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
+    return ListTile(
+      onTap: onTap,
+      leading: Row(
+        children: [
+          if (showIndex && index != null)
+            SizedBox(
+              width: 32,
+              child: Text(
+                '1',
+                style: textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.primary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+
+          if (showAlbumArt) ...[
+            if (showIndex) const SizedBox(width: 8),
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: Stack(
+                children: [
+                  AppCachedImage(
+                    imgUrl: song.albumArt,
+                    width: 48,
+                    height: 48,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

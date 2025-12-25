@@ -5,6 +5,8 @@ import 'package:melodify_app/providers/providers.dart';
 import 'package:provider/provider.dart';
 
 void main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized(); // 添加这行!
+  
   final themeProvider = ThemeProvider();
   themeProvider.loadSettings();
 
