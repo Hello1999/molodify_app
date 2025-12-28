@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:melodify_app/core/responsive/breakpoint.dart';
 import 'package:melodify_app/core/responsive/responsive_builder.dart';
-import 'package:melodify_app/models/playlist.dart';
-import 'package:melodify_app/models/song.dart';
+
 import 'package:melodify_app/services/mock_data.dart';
 import 'package:melodify_app/widgets/cards/playlist_card.dart';
 import 'package:melodify_app/widgets/cards/song_tile.dart';
@@ -134,10 +133,21 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildTopCharts(BuildContext context) {
-    final songs = MockData.topCharts.take(5);
-    final Song song = songs.first;
-
-    return SongTile(song: song);
+    final songs = MockData.topCharts.take(5).toList();
+    
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: songs.length,
+      itemBuilder: (context, index) {
+        return SongTile(
+          song: songs[index],
+          playlist: songs,
+          index: index,
+          showIndex: true,
+        );
+      },
+    );
   }
 }
 

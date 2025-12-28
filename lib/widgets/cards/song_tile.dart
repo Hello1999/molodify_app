@@ -31,21 +31,22 @@ class SongTile extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (showIndex && index != null)
             SizedBox(
               width: 32,
               child: Text(
-                '1',
+                '${index! + 1}',
                 style: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.primary,
+                  fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
-
           if (showAlbumArt) ...[
-            if (showIndex) const SizedBox(width: 8),
+            SizedBox(width: 8),
             SizedBox(
               width: 48,
               height: 48,
@@ -57,12 +58,28 @@ class SongTile extends StatelessWidget {
                     height: 48,
                     borderRadius: BorderRadius.circular(4),
                   ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.equalizer,
+                        color: colorScheme.primary,
+                        size: 24,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
         ],
       ),
+      title: Text('data'),
+      subtitle: Text('B'),
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: [Text('data')]),
     );
   }
 }
