@@ -134,8 +134,9 @@ class HomePage extends StatelessWidget {
 
   Widget _buildTopCharts(BuildContext context) {
     final songs = MockData.topCharts.take(5).toList();
-    
+
     return ListView.builder(
+      padding: EdgeInsets.zero,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: songs.length,

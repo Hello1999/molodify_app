@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:melodify_app/core/theme/app_theme.dart';
 import 'package:melodify_app/pages/app_shell.dart';
+import 'package:melodify_app/providers/player_provider.dart';
 import 'package:melodify_app/providers/providers.dart';
 import 'package:provider/provider.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized(); // 添加这行!
-  
+
   final themeProvider = ThemeProvider();
   themeProvider.loadSettings();
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider.value(value: themeProvider)],
+      providers: [
+        ChangeNotifierProvider.value(value: themeProvider),
+        ChangeNotifierProvider(create: (_) => PlayerProvider()),
+      ],
       child: MelodifyApp(),
     ),
   );

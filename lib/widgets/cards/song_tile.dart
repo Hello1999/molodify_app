@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:melodify_app/models/song.dart';
+import 'package:melodify_app/providers/player_provider.dart';
 import 'package:melodify_app/widgets/common/cached_image.dart';
+import 'package:provider/provider.dart';
 
 class SongTile extends StatelessWidget {
   final Song song;
@@ -27,6 +29,8 @@ class SongTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final playerProvider = context.watch<PlayerProvider>();
+    final isPlaying = playerProvider.currentSong?.id == song.id;
 
     return ListTile(
       onTap: onTap,
@@ -77,8 +81,16 @@ class SongTile extends StatelessWidget {
           ],
         ],
       ),
-      title: Text('data'),
-      subtitle: Text('B'),
+      title: Text(
+        song.title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: textTheme.bodyLarge?.copyWith(
+          color: isPlaying ? colorScheme.primary : null,
+          fontWeight: isPlaying ? FontWeight.w600 : null,
+        ),
+      ),
+      subtitle: Row(children: [Expanded(child: Text(song.title))]),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [Text('data')]),
     );
   }
