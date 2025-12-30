@@ -90,8 +90,38 @@ class SongTile extends StatelessWidget {
           fontWeight: isPlaying ? FontWeight.w600 : null,
         ),
       ),
-      subtitle: Row(children: [Expanded(child: Text(song.title))]),
-      trailing: Row(mainAxisSize: MainAxisSize.min, children: [Text('data')]),
+      subtitle: Row(
+        children: [
+          if (song.isLiked)
+            Padding(
+              padding: EdgeInsets.only(right: 4),
+              child: Icon(Icons.favorite, size: 12, color: colorScheme.primary),
+            ),
+          Expanded(
+            child: Text(
+              song.artist,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showDuration)
+            Text(
+              song.durationString,
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+        ],
+      ),
     );
   }
 }
