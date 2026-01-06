@@ -77,5 +77,10 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addToQueue(Song song) {
+    _queue.add(song);
+    notifyListeners();
+  }
+  
   void _startPositionTimer() {}
 }

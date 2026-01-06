@@ -119,9 +119,101 @@ class SongTile extends StatelessWidget {
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+          IconButton(
+            onPressed: onMoreTap ?? () => _showSongMenu(context),
+            icon: Icon(Icons.more_vert),
+          ),
         ],
       ),
+    );
+  }
+
+  void _showSongMenu(BuildContext context) {
+    final playerProvider = context.read<PlayerProvider>();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              ListTile(
+                leading: AppCachedImage(
+                  imgUrl: song.albumArt,
+                  width: 48,
+                  height: 48,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                title: Text(
+                  song.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  song.artist,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(
+                  song.isLiked ? Icons.favorite : Icons.favorite_border,
+                ),
+                title: Text(
+                  song.isLiked
+                      ? 'Remove from Liked Songs'
+                      : 'Add to Liked Songs',
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.queue_music),
+                title: const Text('Add to queue'),
+                onTap: () {
+                  playerProvider.addToQueue(song);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Added to queue')),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.playlist_add),
+                title: Text('Add to Playlist'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.album),
+                title: Text('View album'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text('View album'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.share),
+                title: Text('Share'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 }
