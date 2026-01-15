@@ -62,19 +62,20 @@ class SongTile extends StatelessWidget {
                     height: 48,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.equalizer,
-                        color: colorScheme.primary,
-                        size: 24,
+                  if (isPlaying)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.equalizer,
+                          color: colorScheme.primary,
+                          size: 24,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

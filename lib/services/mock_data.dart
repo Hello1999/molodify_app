@@ -1,4 +1,5 @@
 // 播放列表数据
+import 'package:melodify_app/models/album.dart';
 import 'package:melodify_app/models/playlist.dart';
 import 'package:melodify_app/models/song.dart';
 
@@ -197,6 +198,64 @@ class MockData {
       albumArt: _albumArt(20),
       duration: const Duration(minutes: 4, seconds: 12),
       playCount: 543210,
+    ),
+  ];
+
+  // 专辑数据
+  static final List<Album> albums = [
+    Album(
+      id: 'al1',
+      title: 'Starlight',
+      artist: 'Luna Eclipse',
+      artistId: 'a1',
+      coverImage: _albumArt(1),
+      year: 2024,
+      songs: songs.sublist(0, 5),
+    ),
+    Album(
+      id: 'al2',
+      title: 'Digital Horizon',
+      artist: 'Neon Pulse',
+      artistId: 'a2',
+      coverImage: _albumArt(2),
+      year: 2024,
+      songs: songs.sublist(1, 4),
+    ),
+    Album(
+      id: 'al3',
+      title: 'Ocean Songs',
+      artist: 'Coastal Vibes',
+      artistId: 'a3',
+      coverImage: _albumArt(3),
+      year: 2023,
+      songs: songs.sublist(2, 6),
+    ),
+    Album(
+      id: 'al4',
+      title: 'Metropolis',
+      artist: 'Urban Soul',
+      artistId: 'a4',
+      coverImage: _albumArt(4),
+      year: 2024,
+      songs: songs.sublist(3, 8),
+    ),
+    Album(
+      id: 'al5',
+      title: 'Club Nights',
+      artist: 'Beat Machine',
+      artistId: 'a6',
+      coverImage: _albumArt(7),
+      year: 2024,
+      songs: songs.sublist(6, 10),
+    ),
+    Album(
+      id: 'al6',
+      title: 'Legends',
+      artist: 'Thunder Band',
+      artistId: 'a8',
+      coverImage: _albumArt(11),
+      year: 2023,
+      songs: songs.sublist(10, 15),
     ),
   ];
 
