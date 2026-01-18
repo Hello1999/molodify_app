@@ -4,6 +4,7 @@ import 'package:melodify_app/core/responsive/responsive_builder.dart';
 import 'package:melodify_app/models/album.dart';
 import 'package:melodify_app/services/mock_data.dart';
 import 'package:melodify_app/widgets/cards/album_card.dart';
+import 'package:melodify_app/widgets/cards/category_card.dart';
 import 'package:melodify_app/widgets/common/section_header.dart';
 
 class SearchPage extends StatefulWidget {
@@ -95,6 +96,9 @@ class SearchPageState extends State<SearchPage> {
   }
 
   List<Widget> _buildBrowseContent(ScreenSize screenSize) {
+    final categorys = MockData.categories;
+    final columns = screenSize.gridColumns;
+
     return [
       SliverToBoxAdapter(
         child: SectionHeader(
@@ -104,7 +108,19 @@ class SearchPageState extends State<SearchPage> {
       ),
       SliverPadding(
         padding: EdgeInsets.symmetric(horizontal: screenSize.horizontalPadding),
-        sliver: SliverToBoxAdapter(child: _buildHorizontalAlbums(screenSize)),
+        sliver: SliverGrid(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) =>
+                CategoryCard(category: categorys[index], onTap: () {}),
+            childCount: categorys.length,
+          ),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            childAspectRatio: 1.8,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+          ),
+        ),
       ),
     ];
   }

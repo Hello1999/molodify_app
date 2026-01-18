@@ -36,6 +36,7 @@ class ScreenSize {
   bool get isDesktop => deviceType == DeviceType.desktop;
   bool get isLandscape => !isPortrait;
 
+  // 获取合适的网格列数
   int get gridColumns {
     switch (deviceType) {
       case DeviceType.mobile:

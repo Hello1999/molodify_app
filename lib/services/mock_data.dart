@@ -1,5 +1,7 @@
 // 播放列表数据
+import 'package:flutter/material.dart';
 import 'package:melodify_app/models/album.dart';
+import 'package:melodify_app/models/category.dart';
 import 'package:melodify_app/models/playlist.dart';
 import 'package:melodify_app/models/song.dart';
 
@@ -10,6 +12,9 @@ class MockData {
       'https://picsum.photos/seed/album$id/400/400';
   static String _playlistImg(int id) =>
       'https://picsum.photos/seed/playlist$id/400/400';
+
+  static String _categoryImg(int id) =>
+      'https://picsum.photos/seed/category$id/400/400';
 
   // 歌曲数据
   static final List<Song> songs = [
@@ -339,6 +344,81 @@ class MockData {
       createdBy: 'Melodify',
       createdAt: DateTime(2023, 12, 1),
       followers: 4500000,
+    ),
+  ];
+  // 分类数据
+  static final List<MusicCategory> categories = [
+    MusicCategory(
+      id: 'c1',
+      name: 'Pop',
+      imageUrl: _categoryImg(1),
+      color: Colors.pink,
+    ),
+    MusicCategory(
+      id: 'c2',
+      name: 'Hip-Hop',
+      imageUrl: _categoryImg(2),
+      color: Colors.orange,
+    ),
+    MusicCategory(
+      id: 'c3',
+      name: 'Rock',
+      imageUrl: _categoryImg(3),
+      color: Colors.red,
+    ),
+    MusicCategory(
+      id: 'c4',
+      name: 'Electronic',
+      imageUrl: _categoryImg(4),
+      color: Colors.purple,
+    ),
+    MusicCategory(
+      id: 'c5',
+      name: 'R&B',
+      imageUrl: _categoryImg(5),
+      color: Colors.indigo,
+    ),
+    MusicCategory(
+      id: 'c6',
+      name: 'Jazz',
+      imageUrl: _categoryImg(6),
+      color: Colors.brown,
+    ),
+    MusicCategory(
+      id: 'c7',
+      name: 'Classical',
+      imageUrl: _categoryImg(7),
+      color: Colors.blueGrey,
+    ),
+    MusicCategory(
+      id: 'c8',
+      name: 'Country',
+      imageUrl: _categoryImg(8),
+      color: Colors.amber,
+    ),
+    MusicCategory(
+      id: 'c9',
+      name: 'Latin',
+      imageUrl: _categoryImg(9),
+      color: Colors.deepOrange,
+    ),
+    MusicCategory(
+      id: 'c10',
+      name: 'K-Pop',
+      imageUrl: _categoryImg(10),
+      color: Colors.teal,
+    ),
+    MusicCategory(
+      id: 'c11',
+      name: 'Indie',
+      imageUrl: _categoryImg(11),
+      color: Colors.green,
+    ),
+    MusicCategory(
+      id: 'c12',
+      name: 'Metal',
+      imageUrl: _categoryImg(12),
+      color: Colors.grey,
     ),
   ];
 
