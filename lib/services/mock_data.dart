@@ -1,6 +1,7 @@
 // 播放列表数据
 import 'package:flutter/material.dart';
 import 'package:melodify_app/models/album.dart';
+import 'package:melodify_app/models/artist.dart';
 import 'package:melodify_app/models/category.dart';
 import 'package:melodify_app/models/playlist.dart';
 import 'package:melodify_app/models/song.dart';
@@ -12,10 +13,22 @@ class MockData {
       'https://picsum.photos/seed/album$id/400/400';
   static String _playlistImg(int id) =>
       'https://picsum.photos/seed/playlist$id/400/400';
-
+static String _artistImg(int id) => 'https://picsum.photos/seed/artist$id/400/400';
   static String _categoryImg(int id) =>
       'https://picsum.photos/seed/category$id/400/400';
 
+  // 艺人数据
+  static final List<Artist> artists = [
+    Artist(id: 'a1', name: 'Luna Eclipse', imageUrl: _artistImg(1), bio: 'Electronic music producer from LA', followers: 2500000, monthlyListeners: 8500000, genres: ['Electronic', 'Pop'], isVerified: true),
+    Artist(id: 'a2', name: 'Neon Pulse', imageUrl: _artistImg(2), bio: 'Synth-wave artist', followers: 1800000, monthlyListeners: 5200000, genres: ['Synthwave', 'Electronic'], isVerified: true),
+    Artist(id: 'a3', name: 'Coastal Vibes', imageUrl: _artistImg(3), bio: 'Beach music collective', followers: 950000, monthlyListeners: 3200000, genres: ['Chill', 'Acoustic']),
+    Artist(id: 'a4', name: 'Urban Soul', imageUrl: _artistImg(4), bio: 'R&B singer-songwriter', followers: 3200000, monthlyListeners: 12000000, genres: ['R&B', 'Soul'], isVerified: true),
+    Artist(id: 'a5', name: 'Echo Valley', imageUrl: _artistImg(5), bio: 'Folk rock band', followers: 780000, monthlyListeners: 2100000, genres: ['Folk', 'Rock']),
+    Artist(id: 'a6', name: 'Beat Machine', imageUrl: _artistImg(6), bio: 'DJ and producer', followers: 4500000, monthlyListeners: 18000000, genres: ['EDM', 'House'], isVerified: true),
+    Artist(id: 'a7', name: 'Smooth Trio', imageUrl: _artistImg(7), bio: 'Jazz ensemble', followers: 320000, monthlyListeners: 890000, genres: ['Jazz', 'Blues']),
+    Artist(id: 'a8', name: 'Thunder Band', imageUrl: _artistImg(8), bio: 'Rock legends', followers: 8900000, monthlyListeners: 25000000, genres: ['Rock', 'Alternative'], isVerified: true),
+  ];
+  
   // 歌曲数据
   static final List<Song> songs = [
     Song(

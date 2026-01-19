@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:melodify_app/core/responsive/breakpoint.dart';
 import 'package:melodify_app/core/responsive/responsive_builder.dart';
 import 'package:melodify_app/models/album.dart';
+import 'package:melodify_app/models/artist.dart';
+import 'package:melodify_app/models/playlist.dart';
+import 'package:melodify_app/models/song.dart';
 import 'package:melodify_app/services/mock_data.dart';
 import 'package:melodify_app/widgets/cards/album_card.dart';
 import 'package:melodify_app/widgets/cards/category_card.dart';
+import 'package:melodify_app/widgets/cards/song_tile.dart';
 import 'package:melodify_app/widgets/common/section_header.dart';
 
 class SearchPage extends StatefulWidget {
@@ -23,12 +27,54 @@ class SearchPageState extends State<SearchPage> {
   String _searchQuery = '';
   bool _isSearching = false;
 
+  List<Song> _songResults = [];
+  List<Artist> _artistResults = [];
+  List<Playlist> _playlistResults = [];
   List<Album> _albumResults = MockData.albums.toList();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   void _performSearch(String query) {
     setState(() {
       _searchQuery = query;
-      _isSearching = true;
+      _isSearching = query.isNotEmpty;
+
+      if (_isSearching) {
+        final lowerQuery = query.toLowerCase();
+
+        _songResults = MockData.songs
+            .where(
+              (s) =>
+                  s.title.toLowerCase().contains(lowerQuery) ||
+                  s.artist.toLowerCase().contains(lowerQuery),
+            )
+            .toList();
+
+        _artistResults = MockData.artists
+            .where((a) => a.name.toLowerCase().contains(lowerQuery))
+            .toList();
+
+        _playlistResults = MockData.playlists
+            .where(
+              (p) =>
+                  p.name.toLowerCase().contains(lowerQuery) ||
+                  p.description.toLowerCase().contains(lowerQuery),
+            )
+            .toList();
+
+        _albumResults = MockData.albums
+            .where(
+              (a) =>
+                  a.title.toLowerCase().contains(lowerQuery) ||
+                  a.artist.toLowerCase().contains(lowerQuery),
+            )
+            .toList();
+      }
     });
   }
 
@@ -89,7 +135,10 @@ class SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
-          ..._buildBrowseContent(screenSize),
+          if (_isSearching)
+            ..._buildSearchResults(screenSize)
+          else
+            ..._buildBrowseContent(screenSize),
         ],
       ),
     );
@@ -122,6 +171,62 @@ class SearchPageState extends State<SearchPage> {
           ),
         ),
       ),
+      SliverToBoxAdapter(
+        child: SectionHeader(
+          title: 'Recent Searches',
+          trailing: TextButton(onPressed: () {}, child: Text('Clear')),
+        ),
+      ),
+      SliverList(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final items = [
+            ('Luna Eclipse', Icons.person),
+            ('Chill Vibes', Icons.playlist_play),
+            ('Electronic', Icons.category),
+            ('Summer Breeze', Icons.music_note),
+          ];
+
+          return ListTile(
+            leading: Icon(items[index].$2),
+            title: Text(items[index].$1),
+            trailing: IconButton(onPressed: () {}, icon: Icon(Icons.close)),
+            onTap: () {},
+          );
+        }, childCount: 4),
+      ),
+    ];
+  }
+
+  List<Widget> _buildSearchResults(ScreenSize screenSize) {
+    final hasResults =
+        _songResults.isNotEmpty ||
+        _artistResults.isNotEmpty ||
+        _playlistResults.isNotEmpty ||
+        _albumResults.isNotEmpty;
+
+    if (!hasResults) {}
+    return [
+      if (_songResults.isNotEmpty) ...[
+        SliverToBoxAdapter(
+          child: SectionHeader(
+            title: 'Songs',
+            subtitle: '${_songResults.length} results',
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) =>
+                SongTile(song: _songResults[index], playlist: _songResults),
+                childCount: _songResults.take(5).length
+          ),
+        ),
+        if (_songResults.length > 5) 
+          SliverToBoxAdapter(
+            child: Center(
+              child: TextButton(onPressed: () {}, child: Text('Show all ${_songResults.length} songs')),
+            ),
+          )
+      ],
     ];
   }
 
