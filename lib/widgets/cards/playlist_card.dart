@@ -22,7 +22,6 @@ class PlaylistCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final cardWidth = width ?? 160;
 
-    
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
@@ -50,12 +49,43 @@ class PlaylistCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant
+                color: colorScheme.onSurfaceVariant,
               ),
-            )
+            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class PlaylistTile extends StatelessWidget {
+  final Playlist playlist;
+  final VoidCallback? onTap;
+
+  const PlaylistTile({super.key, required this.playlist, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ListTile(
+      onTap: onTap,
+      leading: AppCachedImage(
+        imgUrl: playlist.coverImage,
+        width: 56,
+        height: 56,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      title: Text(playlist.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(
+        '${playlist.songCount} songs · ${playlist.totalDurationString}',
+        style: textTheme.bodySmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
+      trailing: const Icon(Icons.chevron_right),
     );
   }
 }

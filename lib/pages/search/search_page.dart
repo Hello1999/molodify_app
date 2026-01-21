@@ -7,7 +7,9 @@ import 'package:melodify_app/models/playlist.dart';
 import 'package:melodify_app/models/song.dart';
 import 'package:melodify_app/services/mock_data.dart';
 import 'package:melodify_app/widgets/cards/album_card.dart';
+import 'package:melodify_app/widgets/cards/artist_card.dart';
 import 'package:melodify_app/widgets/cards/category_card.dart';
+import 'package:melodify_app/widgets/cards/playlist_card.dart';
 import 'package:melodify_app/widgets/cards/song_tile.dart';
 import 'package:melodify_app/widgets/common/section_header.dart';
 
@@ -215,17 +217,66 @@ class SearchPageState extends State<SearchPage> {
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
-            (context, index) =>
-                SongTile(song: _songResults[index], playlist: _songResults),
-                childCount: _songResults.take(5).length
+            (context, index) => SongTile(
+              song: _songResults[index],
+              playlist: _songResults,
+              onTap: () {},
+            ),
+            childCount: _songResults.take(5).length,
           ),
         ),
-        if (_songResults.length > 5) 
+        if (_songResults.length > 5)
           SliverToBoxAdapter(
             child: Center(
-              child: TextButton(onPressed: () {}, child: Text('Show all ${_songResults.length} songs')),
+              child: TextButton(
+                onPressed: () {},
+                child: Text('Show all ${_songResults.length} songs'),
+              ),
             ),
-          )
+          ),
+      ],
+      if (_artistResults.isNotEmpty) ...[
+        SliverToBoxAdapter(
+          child: SectionHeader(
+            title: 'Artists',
+            subtitle: '${_artistResults.length} results',
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) =>
+                ArtistTile(artist: _artistResults[index], onTap: () {}),
+            childCount: _artistResults.take(3).length,
+          ),
+        ),
+      ],
+
+      // Albums
+      if (_albumResults.isNotEmpty) ...[
+        SliverToBoxAdapter(
+          child: SectionHeader(
+            title: 'Albums',
+            subtitle: '${_albumResults.length} results',
+          ),
+        ),
+        SliverToBoxAdapter(child: _buildHorizontalAlbums(screenSize)),
+      ],
+
+      // Playlists
+      if (_playlistResults.isNotEmpty) ...[
+        SliverToBoxAdapter(
+          child: SectionHeader(
+            title: 'Playlists',
+            subtitle: '${_playlistResults.length} results',
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) =>
+                PlaylistTile(playlist: _playlistResults[index], onTap: () {}),
+            childCount: _playlistResults.take(3).length,
+          ),
+        ),
       ],
     ];
   }
@@ -233,6 +284,23 @@ class SearchPageState extends State<SearchPage> {
   Widget _buildHorizontalAlbums(ScreenSize screenSize) {
     final cardWidth = 140.0;
 
-    return AlbumCard(album: _albumResults[0]);
+    return SizedBox(
+      height: cardWidth + 50,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: screenSize.horizontalPadding),
+        itemCount: _albumResults.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: AlbumCard(
+              album: _albumResults[index],
+              width: cardWidth,
+              onTap: () {},
+            ),
+          );
+        },
+      ),
+    );
   }
 }
