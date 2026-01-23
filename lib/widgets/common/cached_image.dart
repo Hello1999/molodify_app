@@ -14,7 +14,7 @@ class AppCachedImage extends StatelessWidget {
     required this.imgUrl,
     this.width,
     this.height,
-    this.fit,
+    this.fit = BoxFit.cover,
     this.borderRadius,
   });
 
